@@ -1,13 +1,23 @@
 import { validateUrl } from './validation.js'
 import { createView } from './view.js'
+import i18n from 'i18next'
+import resources from './locales/index.js'
 
 const initApp = (container) => {
-  const handleSubmit = (formData, state) => {
+  const i18nInstance = i18n.createInstance()
+  
+  i18nInstance.init({
+    lng: 'ru',
+    debug: false,
+    resources,
+  })
+
+  const handleSubmit = (formData, state, i18nInstance) => {
     state.process.state = 'validating'
     state.process.error = null
-    state.form.success = null
+    state.form.success = false
 
-    validateUrl(formData.url, state.data.feeds)
+    validateUrl(formData.url, state.data.feeds, i18nInstance)
       .then(() => {
         state.process.state = 'valid'
         state.process.error = null
@@ -24,7 +34,7 @@ const initApp = (container) => {
         state.process.state = 'filling'
         state.form.url = ''
         state.process.error = null
-        state.form.success = 'RSS успешно загружен'
+        state.form.success = true
       })
       .catch((error) => {
         state.process.state = 'invalid'
@@ -32,16 +42,16 @@ const initApp = (container) => {
         if (error.name === 'ValidationError') {
           state.process.error = error.errors[0]
         } else {
-          state.process.error = 'Ошибка сети или сервера'
+          state.process.error = i18nInstance.t('errors.network')
         }
         
-        state.form.success = null
+        state.form.success = false
       })
   }
 
-  const view = createView(container, handleSubmit)
+  const view = createView(container, handleSubmit, i18nInstance)
   
-  return view
+  return { view, i18nInstance }
 }
 
 export { initApp }

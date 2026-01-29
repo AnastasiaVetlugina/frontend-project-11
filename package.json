@@ -19,6 +19,7 @@
     "bootstrap": "^5.3.8",
     "esbuild": "^0.25.12",
     "fdir": "^6.5.0",
+    "i18next": "^25.8.0",
     "nanoid": "^3.3.11",
     "on-change": "^6.0.1",
     "picocolors": "^1.1.1",

@@ -1,19 +1,26 @@
 import * as yup from 'yup'
 
-const createSchema = (existingFeeds = []) => {
+const createSchema = (existingFeeds = [], i18nInstance) => {
+  yup.setLocale({
+    string: {
+      required: () => i18nInstance.t('errors.required'),
+      url: () => i18nInstance.t('errors.url'),
+    },
+  })
+
   return yup.object({
     url: yup
       .string()
-      .required('Поле не должно быть пустым')
-      .url('Ссылка должна быть валидным URL')
+      .required()
+      .url()
       .test(
         'is-unique',
-        'RSS уже существует',
+        i18nInstance.t('errors.duplicate'),
         (value) => !existingFeeds.includes(value)
       )
       .test(
         'is-rss',
-        'Это не RSS ссылка',
+        i18nInstance.t('errors.notRss'),
         (value) => {
           return new Promise((resolve) => {
             if (!value) {
@@ -38,8 +45,8 @@ const createSchema = (existingFeeds = []) => {
   })
 }
 
-const validateUrl = (url, existingFeeds = []) => {
-  const schema = createSchema(existingFeeds)
+const validateUrl = (url, existingFeeds = [], i18nInstance) => {
+  const schema = createSchema(existingFeeds, i18nInstance)
   return schema.validate({ url }, { abortEarly: false })
 }
 
