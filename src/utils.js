@@ -1,11 +1,11 @@
 import axios from 'axios'
 import { nanoid } from 'nanoid'
 
-export const fetchRssFeed = url => {
+export const fetchRssFeed = (url) => {
   const proxyUrl = `https://allorigins.hexlet.app/get?url=${encodeURIComponent(url)}&disableCache=true`
 
   return axios.get(proxyUrl, { timeout: 10000 })
-    .then(response => {
+    .then((response) => {
       if (response.status !== 200 || !response.data.contents) {
         throw new Error('Ошибка при загрузке RSS')
       }
@@ -13,7 +13,7 @@ export const fetchRssFeed = url => {
     })
 }
 
-export const parseRssFeed = xmlString => {
+export const parseRssFeed = (xmlString) => {
   return new Promise((resolve, reject) => {
     try {
       if (typeof DOMParser === 'undefined') {
@@ -52,13 +52,14 @@ export const parseRssFeed = xmlString => {
       }
 
       resolve({ feed, posts })
-    } catch {
+    } 
+    catch {
       reject(new Error('invalidRss'))
     }
   })
 }
 
-export const loadAndParseFeed = url => {
+export const loadAndParseFeed = (url) => {
   return fetchRssFeed(url)
     .then(xmlString => parseRssFeed(xmlString))
 }
