@@ -1,21 +1,21 @@
 import axios from 'axios'
 
-const getProxiedUrl = (url) => {
+const getProxiedUrl = url => {
   const proxy = 'https://allorigins.hexlet.app/get'
   return `${proxy}?disableCache=true&url=${encodeURIComponent(url)}`
 }
 
-const updatePosts = (state) => {
+const updatePosts = state => {
   if (!state.data.feeds || state.data.feeds.length === 0) {
     setTimeout(() => updatePosts(state), 5000)
     return
   }
 
-  const feedPromises = state.data.feeds.map((feed) => {
+  const feedPromises = state.data.feeds.map(feed => {
     const url = getProxiedUrl(feed.url)
 
     return axios.get(url, { timeout: 5000 })
-      .then((response) => {
+      .then(response => {
         if (!response.data.contents) {
           return
         }
@@ -31,8 +31,8 @@ const updatePosts = (state) => {
         const existingLinks = state.data.posts.map(post => post.link)
         const newPosts = []
 
-        items.forEach((item) => {
-          const getTextContent = (selector) => {
+        items.forEach(item => {
+          const getTextContent = selector => {
             const element = item.querySelector(selector)
             return element ? element.textContent.trim() : ''
           }

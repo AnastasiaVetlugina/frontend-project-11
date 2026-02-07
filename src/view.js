@@ -23,8 +23,7 @@ const renderFeedback = (elements, error, success, i18nInstance) => {
   let message = ''
   if (error) {
     message = error
-  } 
-  else if (success) {
+  } else if (success) {
     message = i18nInstance.t('app.success')
   }
 
@@ -36,8 +35,7 @@ const renderFeedback = (elements, error, success, i18nInstance) => {
   if (error) {
     elements.feedback.classList.add('text-danger')
     elements.input.classList.add('is-invalid')
-  } 
-  else if (success) {
+  } else if (success) {
     elements.feedback.classList.add('text-success')
   }
 }
@@ -57,7 +55,7 @@ const renderFeeds = (container, feeds) => {
   const feedsList = document.createElement('ul')
   feedsList.className = 'list-group border-0 rounded-0'
 
-  feeds.forEach((feed) => {
+  feeds.forEach(feed => {
     const feedItem = document.createElement('li')
     feedItem.className = 'list-group-item border-0 border-end-0'
 
@@ -86,7 +84,7 @@ const renderPosts = (container, posts, readPosts) => {
 
   const sortedPosts = [...posts].reverse()
 
-  sortedPosts.forEach((post) => {
+  sortedPosts.forEach(post => {
     const isRead = readPosts.includes(post.id)
     const fontWeightClass = isRead ? '' : 'fw-bold'
 
@@ -131,8 +129,8 @@ const renderStaticTexts = (elements, i18nInstance) => {
   document.querySelector('p.text-secondary').textContent = i18nInstance.t('app.example')
 }
 
-const setupModalHandlers = (state) => {
-  document.addEventListener('click', (e) => {
+const setupModalHandlers = state => {
+  document.addEventListener('click', e => {
     const viewButton = e.target.closest('button[data-id]')
 
     if (!viewButton) return
@@ -194,7 +192,7 @@ const createView = (container, onSubmit, i18nInstance) => {
     },
   }
 
-  const state = onChange(initialState, (path) => {
+  const state = onChange(initialState, path => {
     if (path === 'ui.lng') {
       i18nInstance.changeLanguage(state.ui.lng)
         .then(() => {
@@ -226,7 +224,7 @@ const createView = (container, onSubmit, i18nInstance) => {
     }
   })
 
-  elements.form.addEventListener('submit', (e) => {
+  elements.form.addEventListener('submit', e => {
     e.preventDefault()
     const formData = new FormData(e.target)
     const url = formData.get('url')
@@ -240,7 +238,7 @@ const createView = (container, onSubmit, i18nInstance) => {
     }
   })
 
-  elements.input.addEventListener('input', (e) => {
+  elements.input.addEventListener('input', e => {
     state.form.url = e.target.value
     state.process.error = null
     state.form.success = false

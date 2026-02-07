@@ -21,8 +21,8 @@ const createSchema = (existingFeedUrls = [], i18nInstance) => {
       .test(
         'is-rss',
         i18nInstance.t('errors.notRss'),
-        (value) => {
-          return new Promise((resolve) => {
+        value => {
+          return new Promise(resolve => {
             if (!value) {
               resolve(false)
               return
