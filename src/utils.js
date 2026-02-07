@@ -52,7 +52,7 @@ export const parseRssFeed = (xmlString) => {
       }
 
       resolve({ feed, posts })
-    } 
+    }
     catch {
       reject(new Error('invalidRss'))
     }

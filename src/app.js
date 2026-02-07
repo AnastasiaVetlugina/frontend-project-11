@@ -54,16 +54,16 @@ const initApp = (container) => {
 
         if (error.name === 'ValidationError') {
           state.process.error = error.errors[0]
-        } 
+        }
         else if (error.message.includes('invalidRss')) {
           state.process.error = i18nInstance.t('errors.notRss')
-        } 
+        }
         else if (error.message.includes('timeout')) {
           state.process.error = i18nInstance.t('errors.network')
-        } 
+        }
         else if (error.message.includes('Network')) {
           state.process.error = i18nInstance.t('errors.network')
-        } 
+        }
         else {
           state.process.error = `Ошибка: ${error.message}`
         }

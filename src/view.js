@@ -23,7 +23,7 @@ const renderFeedback = (elements, error, success, i18nInstance) => {
   let message = ''
   if (error) {
     message = error
-  } 
+  }
   else if (success) {
     message = i18nInstance.t('app.success')
   }
@@ -36,7 +36,7 @@ const renderFeedback = (elements, error, success, i18nInstance) => {
   if (error) {
     elements.feedback.classList.add('text-danger')
     elements.input.classList.add('is-invalid')
-  } 
+  }
   else if (success) {
     elements.feedback.classList.add('text-success')
   }
