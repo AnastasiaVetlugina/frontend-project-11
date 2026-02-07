@@ -23,7 +23,8 @@ const renderFeedback = (elements, error, success, i18nInstance) => {
   let message = ''
   if (error) {
     message = error
-  } else if (success) {
+  } 
+  else if (success) {
     message = i18nInstance.t('app.success')
   }
 
@@ -35,7 +36,8 @@ const renderFeedback = (elements, error, success, i18nInstance) => {
   if (error) {
     elements.feedback.classList.add('text-danger')
     elements.input.classList.add('is-invalid')
-  } else if (success) {
+  } 
+  else if (success) {
     elements.feedback.classList.add('text-success')
   }
 }
@@ -81,7 +83,7 @@ const renderPosts = (container, posts, readPosts) => {
 
   const postsList = document.createElement('ul')
   postsList.className = 'list-group border-0 rounded-0'
-  
+
   const sortedPosts = [...posts].reverse()
 
   sortedPosts.forEach((post) => {
