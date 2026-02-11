@@ -10,9 +10,8 @@ import {
   renderFeeds,
   renderPosts,
   renderStaticTexts,
-  renderModal
+  renderModal,
 } from './view.js'
-
 
 const initApp = async (container) => {
   const i18nInstance = i18n.createInstance()
@@ -24,10 +23,10 @@ const initApp = async (container) => {
   })
 
 const elements = {
-    form: container.querySelector('.rss-form'),
-    input: document.querySelector('#url-input'),
-    feedback: document.querySelector('.feedback'),
-    submitBtn: document.querySelector('button[type="submit"]'),
+  form: container.querySelector('.rss-form'),
+  input: document.querySelector('#url-input'),
+  feedback: document.querySelector('.feedback'),
+  submitBtn: document.querySelector('button[type="submit"]'),
   }
 
   renderStaticTexts(elements, i18nInstance)

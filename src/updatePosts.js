@@ -34,7 +34,8 @@ const updatePosts = (state) => {
               feedId: feed.id,
             })))
           }
-        } catch (error) {
+        } 
+        catch {
           // Игнорируем ошибки при обновлении
         }
       })
