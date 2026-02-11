@@ -24,8 +24,8 @@ const updatePosts = (state) => {
 
           const existingLinks = state.data.posts.map(post => post.link)
 
-          const uniqueNewPosts = newPosts.filter(post => 
-            post.link && !existingLinks.includes(post.link)
+          const uniqueNewPosts = newPosts.filter(post =>
+            post.link && !existingLinks.includes(post.link),
           )
 
           if (uniqueNewPosts.length > 0) {
@@ -34,7 +34,7 @@ const updatePosts = (state) => {
               feedId: feed.id,
             })))
           }
-        } catch {
+        }catch {
           // Игнорируем ошибки при обновлении
         }
       })
