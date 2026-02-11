@@ -5,10 +5,10 @@ import updatePosts from './updatePosts.js'
 import i18n from 'i18next'
 import resources from './locales/index.js'
 
-const initApp = (container) => {
+const initApp = async (container) => {
   const i18nInstance = i18n.createInstance()
 
-  i18nInstance.init({
+  await i18nInstance.init({
     lng: 'ru',
     debug: false,
     resources,
