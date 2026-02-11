@@ -21,7 +21,7 @@ const updatePosts = (state) => {
 
         try {
           const { posts: newPosts } = parseRssFeed(response.data.contents)
-          
+        
           const existingLinks = state.data.posts.map(post => post.link)
           
           const uniqueNewPosts = newPosts.filter(post => 
@@ -34,8 +34,7 @@ const updatePosts = (state) => {
               feedId: feed.id,
             })))
           }
-        } 
-        catch {
+        } catch {
           // Игнорируем ошибки при обновлении
         }
       })

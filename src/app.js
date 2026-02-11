@@ -22,11 +22,11 @@ const initApp = async (container) => {
     resources,
   })
 
-const elements = {
-  form: container.querySelector('.rss-form'),
-  input: document.querySelector('#url-input'),
-  feedback: document.querySelector('.feedback'),
-  submitBtn: document.querySelector('button[type="submit"]'),
+  const elements = {
+    form: container.querySelector('.rss-form'),
+    input: document.querySelector('#url-input'),
+    feedback: document.querySelector('.feedback'),
+    submitBtn: document.querySelector('button[type="submit"]'),
   }
 
   renderStaticTexts(elements, i18nInstance)
@@ -155,8 +155,7 @@ const elements = {
 
     renderModal(postTitle, postDescription, postLink)
     
-    if (postId && !state.ui.readPosts.includes(postId)) {
-      state.ui.readPosts.push(postId)
+    if (postId && !state.ui.readPosts.includes(postId)) {state.ui.readPosts.push(postId)
     }
   }
 
