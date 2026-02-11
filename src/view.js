@@ -1,6 +1,4 @@
-import onChange from 'on-change'
-
-const handleFormState = (elements, formState) => {
+export const handleFormState = (elements, formState) => {
   switch (formState) {
     case 'validating':
     case 'submitting':
@@ -19,7 +17,7 @@ const handleFormState = (elements, formState) => {
   }
 }
 
-const renderFeedback = (elements, error, success, i18nInstance) => {
+export const renderFeedback = (elements, error, success, i18nInstance) => {
   let message = ''
   if (error) {
     message = error
@@ -29,7 +27,6 @@ const renderFeedback = (elements, error, success, i18nInstance) => {
   }
 
   elements.feedback.textContent = message
-
   elements.feedback.classList.remove('text-danger', 'text-success')
   elements.input.classList.remove('is-invalid')
 
@@ -42,11 +39,7 @@ const renderFeedback = (elements, error, success, i18nInstance) => {
   }
 }
 
-const renderUrl = (elements, url) => {
-  elements.input.value = url
-}
-
-const renderFeeds = (container, feeds) => {
+export const renderFeeds = (container, feeds) => {
   const feedsContainer = container.querySelector('.feeds .list-group')
 
   if (feeds.length === 0) {
@@ -60,12 +53,10 @@ const renderFeeds = (container, feeds) => {
   feeds.forEach((feed) => {
     const feedItem = document.createElement('li')
     feedItem.className = 'list-group-item border-0 border-end-0'
-
     feedItem.innerHTML = `
       <h3 class="h6 m-0">${feed.title}</h3>
       <p class="m-0 small text-black-50">${feed.description}</p>
     `
-
     feedsList.appendChild(feedItem)
   })
 
@@ -73,7 +64,7 @@ const renderFeeds = (container, feeds) => {
   feedsContainer.appendChild(feedsList)
 }
 
-const renderPosts = (container, posts, readPosts) => {
+export const renderPosts = (container, posts, readPosts) => {
   const postsContainer = container.querySelector('.posts .list-group')
 
   if (posts.length === 0) {
@@ -108,7 +99,6 @@ const renderPosts = (container, posts, readPosts) => {
     viewButton.dataset.bsToggle = 'modal'
     viewButton.dataset.bsTarget = '#modal'
     viewButton.textContent = 'Просмотр'
-
     viewButton.dataset.title = post.title
     viewButton.dataset.description = post.description
     viewButton.dataset.link = post.link
@@ -122,7 +112,7 @@ const renderPosts = (container, posts, readPosts) => {
   postsContainer.appendChild(postsList)
 }
 
-const renderStaticTexts = (elements, i18nInstance) => {
+export const renderStaticTexts = (elements, i18nInstance) => {
   document.querySelector('h1.display-3').textContent = i18nInstance.t('app.title')
   document.querySelector('p.lead').textContent = i18nInstance.t('app.description')
   document.querySelector('label[for="url-input"]').textContent = i18nInstance.t('form.label')
@@ -131,125 +121,20 @@ const renderStaticTexts = (elements, i18nInstance) => {
   document.querySelector('p.text-secondary').textContent = i18nInstance.t('app.example')
 }
 
-const setupModalHandlers = (state) => {
-  document.addEventListener('click', (e) => {
-    const viewButton = e.target.closest('button[data-id]')
+export const renderModal = (postTitle, postDescription, postLink) => {
+  const modalTitle = document.querySelector('.modal-title')
+  const modalBody = document.querySelector('.modal-body')
+  const modalLink = document.querySelector('.full-article')
 
-    if (!viewButton) return
-
-    const postId = viewButton.dataset.id
-    const postTitle = viewButton.dataset.title
-    const postDescription = viewButton.dataset.description
-    const postLink = viewButton.dataset.link
-
-    const modalTitle = document.querySelector('.modal-title')
-    const modalBody = document.querySelector('.modal-body')
-    const modalLink = document.querySelector('.full-article')
-
-    if (modalTitle) {
-      modalTitle.textContent = postTitle || 'Без названия'
-    }
-
-    if (modalBody) {
-      modalBody.textContent = postDescription || 'Нет описания'
-    }
-
-    if (modalLink) {
-      modalLink.href = postLink || '#'
-    }
-
-    if (postId && !state.ui.readPosts.includes(postId)) {
-      state.ui.readPosts.push(postId)
-    }
-  })
-}
-
-const createView = (container, onSubmit, i18nInstance) => {
-  const elements = {
-    form: container.querySelector('.rss-form'),
-    input: document.querySelector('#url-input'),
-    feedback: document.querySelector('.feedback'),
-    submitBtn: document.querySelector('button[type="submit"]'),
+  if (modalTitle) {
+    modalTitle.textContent = postTitle || 'Без названия'
   }
 
-  renderStaticTexts(elements, i18nInstance)
-
-  const initialState = {
-    ui: {
-      lng: 'ru',
-      readPosts: [],
-    },
-    process: {
-      state: 'filling',
-      error: null,
-    },
-    form: {
-      url: '',
-      success: false,
-    },
-    data: {
-      feeds: [],
-      posts: [],
-      feedUrls: [],
-    },
+  if (modalBody) {
+    modalBody.textContent = postDescription || 'Нет описания'
   }
 
-  const state = onChange(initialState, (path) => {
-    if (path === 'ui.lng') {
-      i18nInstance.changeLanguage(state.ui.lng)
-        .then(() => {
-          renderStaticTexts(elements, i18nInstance)
-          if (state.process.error || state.form.success) {
-            renderFeedback(elements, state.process.error, state.form.success, i18nInstance)
-          }
-        })
-    }
-
-    if (path === 'process.state') {
-      handleFormState(elements, state.process.state)
-    }
-
-    if (path === 'process.error' || path === 'form.success') {
-      renderFeedback(elements, state.process.error, state.form.success, i18nInstance)
-    }
-
-    if (path === 'form.url') {
-      renderUrl(elements, state.form.url)
-    }
-
-    if (path === 'data.feeds') {
-      renderFeeds(container, state.data.feeds)
-    }
-
-    if (path === 'data.posts' || path === 'ui.readPosts') {
-      renderPosts(container, state.data.posts, state.ui.readPosts)
-    }
-  })
-
-  elements.form.addEventListener('submit', (e) => {
-    e.preventDefault()
-    const formData = new FormData(e.target)
-    const url = formData.get('url')
-
-    state.process.error = null
-    state.form.success = false
-    state.form.url = url
-
-    if (onSubmit) {
-      onSubmit({ url }, state, i18nInstance)
-    }
-  })
-
-  elements.input.addEventListener('input', (e) => {
-    state.form.url = e.target.value
-    state.process.error = null
-    state.form.success = false
-    state.process.state = 'filling'
-  })
-
-  setupModalHandlers(state)
-
-  return { elements, state }
+  if (modalLink) {
+    modalLink.href = postLink || '#'
+  }
 }
-
-export { createView }

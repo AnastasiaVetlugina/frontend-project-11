@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { parseRssFeed } from './utils.js'
 
 const getProxiedUrl = (url) => {
   const proxy = 'https://allorigins.hexlet.app/get'
@@ -16,46 +17,29 @@ const updatePosts = (state) => {
 
     return axios.get(url, { timeout: 5000 })
       .then((response) => {
-        if (!response.data.contents) {
-          return
-        }
+        if (!response.data.contents) return
 
-        const parser = new DOMParser()
-        const xmlDoc = parser.parseFromString(response.data.contents, 'application/xml')
-        const items = xmlDoc.querySelectorAll('item')
+        try {
+          const { posts: newPosts } = parseRssFeed(response.data.contents)
+          
+          const existingLinks = state.data.posts.map(post => post.link)
+          
+          const uniqueNewPosts = newPosts.filter(post => 
+            post.link && !existingLinks.includes(post.link)
+          )
 
-        if (items.length === 0) {
-          return
-        }
-
-        const existingLinks = state.data.posts.map(post => post.link)
-        const newPosts = []
-
-        items.forEach((item) => {
-          const getTextContent = (selector) => {
-            const element = item.querySelector(selector)
-            return element ? element.textContent.trim() : ''
-          }
-
-          const link = getTextContent('link')
-
-          if (link && !existingLinks.includes(link)) {
-            newPosts.push({
-              id: `post-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-              title: getTextContent('title'),
-              description: getTextContent('description'),
-              link,
+          if (uniqueNewPosts.length > 0) {
+            state.data.posts.unshift(...uniqueNewPosts.map(post => ({
+              ...post,
               feedId: feed.id,
-            })
+            })))
           }
-        })
-
-        if (newPosts.length > 0) {
-          state.data.posts.unshift(...newPosts)
+        } catch (error) {
+          // Игнорируем ошибки при обновлении
         }
       })
       .catch(() => {
-        // Игнорируем ошибки при обновлении
+        // Игнорируем ошибки сети
       })
   })
 
