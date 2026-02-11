@@ -82,7 +82,7 @@ const initApp = async (container) => {
         })
     }
   })
-  
+
   const handleSubmit = (e) => {
     e.preventDefault()
     const formData = new FormData(e.target)
@@ -154,8 +154,9 @@ const initApp = async (container) => {
     const postLink = viewButton.dataset.link
 
     renderModal(postTitle, postDescription, postLink)
-    
-    if (postId && !state.ui.readPosts.includes(postId)) {state.ui.readPosts.push(postId)
+
+    if (postId && !state.ui.readPosts.includes(postId)) {
+      state.ui.readPosts.push(postId)
     }
   }
 
