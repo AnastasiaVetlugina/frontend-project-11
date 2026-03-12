@@ -40,7 +40,6 @@ const initApp = (container) => {
         error: null,
       },
       form: {
-        url: '',
         success: false,
       },
       data: {
@@ -57,10 +56,6 @@ const initApp = (container) => {
 
       if (path === 'process.error' || path === 'form.success') {
         renderFeedback(elements, state.process.error, state.form.success, i18nInstance)
-      }
-
-      if (path === 'form.url') {
-        elements.input.value = state.form.url
       }
 
       if (path === 'data.feeds') {
@@ -89,7 +84,6 @@ const initApp = (container) => {
 
       state.process.error = null
       state.form.success = false
-      state.form.url = url
       state.process.state = 'validating'
 
       validateUrl(url, state.data.feedUrls, i18nInstance)
@@ -113,7 +107,7 @@ const initApp = (container) => {
           updatePosts(state)
 
           state.process.state = 'filling'
-          state.form.url = ''
+          e.target.reset()
           state.process.error = null
           state.form.success = true
         })
@@ -136,13 +130,6 @@ const initApp = (container) => {
         })
     }
 
-    const handleInput = (e) => {
-      state.form.url = e.target.value
-      state.process.error = null
-      state.form.success = false
-      state.process.state = 'filling'
-    }
-
     const handleModalOpen = (e) => {
       const viewButton = e.target.closest('button[data-id]')
       if (!viewButton) return
@@ -160,7 +147,6 @@ const initApp = (container) => {
     }
 
     elements.form.addEventListener('submit', handleSubmit)
-    elements.input.addEventListener('input', handleInput)
     document.addEventListener('click', handleModalOpen)
 
     updatePosts(state)
