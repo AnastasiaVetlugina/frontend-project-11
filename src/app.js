@@ -4,14 +4,7 @@ import { loadAndParseFeed } from './utils.js'
 import updatePosts from './updatePosts.js'
 import i18n from 'i18next'
 import resources from './locales/index.js'
-import {
-  handleFormState,
-  renderFeedback,
-  renderFeeds,
-  renderPosts,
-  renderStaticTexts,
-  renderModal,
-} from './view.js'
+import { initView } from './view.js'
 
 const initApp = (container) => {
   const i18nInstance = i18n.createInstance()
@@ -28,8 +21,6 @@ const initApp = (container) => {
       submitBtn: document.querySelector('button[type="submit"]'),
     }
 
-    renderStaticTexts(elements, i18nInstance)
-
     const initialState = {
       ui: {
         lng: 'ru',
@@ -40,6 +31,7 @@ const initApp = (container) => {
         error: null,
       },
       form: {
+        url: '',
         success: false,
       },
       data: {
@@ -49,33 +41,9 @@ const initApp = (container) => {
       },
     }
 
-    const state = onChange(initialState, (path) => {
-      if (path === 'process.state') {
-        handleFormState(elements, state.process.state)
-      }
+    const state = onChange(initialState, () => {})
 
-      if (path === 'process.error' || path === 'form.success') {
-        renderFeedback(elements, state.process.error, state.form.success, i18nInstance)
-      }
-
-      if (path === 'data.feeds') {
-        renderFeeds(container, state.data.feeds)
-      }
-
-      if (path === 'data.posts' || path === 'ui.readPosts') {
-        renderPosts(container, state.data.posts, state.ui.readPosts)
-      }
-
-      if (path === 'ui.lng') {
-        i18nInstance.changeLanguage(state.ui.lng)
-          .then(() => {
-            renderStaticTexts(elements, i18nInstance)
-            if (state.process.error || state.form.success) {
-              renderFeedback(elements, state.process.error, state.form.success, i18nInstance)
-            }
-          })
-      }
-    })
+    initView(container, elements, state, i18nInstance)
 
     const handleSubmit = (e) => {
       e.preventDefault()
@@ -88,7 +56,6 @@ const initApp = (container) => {
 
       validateUrl(url, state.data.feedUrls, i18nInstance)
         .then(() => {
-          state.process.state = 'valid'
           state.process.state = 'submitting'
           return loadAndParseFeed(url)
         })
@@ -135,11 +102,6 @@ const initApp = (container) => {
       if (!viewButton) return
 
       const postId = viewButton.dataset.id
-      const postTitle = viewButton.dataset.title
-      const postDescription = viewButton.dataset.description
-      const postLink = viewButton.dataset.link
-
-      renderModal(postTitle, postDescription, postLink)
 
       if (postId && !state.ui.readPosts.includes(postId)) {
         state.ui.readPosts.push(postId)

@@ -1,4 +1,6 @@
-export const handleFormState = (elements, formState) => {
+import onChange from 'on-change'
+
+const handleFormState = (elements, formState) => {
   switch (formState) {
     case 'validating':
     case 'submitting':
@@ -17,7 +19,7 @@ export const handleFormState = (elements, formState) => {
   }
 }
 
-export const renderFeedback = (elements, error, success, i18nInstance) => {
+const renderFeedback = (elements, error, success, i18nInstance) => {
   let message = ''
   if (error) {
     message = error
@@ -39,7 +41,7 @@ export const renderFeedback = (elements, error, success, i18nInstance) => {
   }
 }
 
-export const renderFeeds = (container, feeds) => {
+const renderFeeds = (container, feeds) => {
   const feedsContainer = container.querySelector('.feeds .list-group')
 
   if (feeds.length === 0) {
@@ -64,7 +66,7 @@ export const renderFeeds = (container, feeds) => {
   feedsContainer.appendChild(feedsList)
 }
 
-export const renderPosts = (container, posts, readPosts) => {
+const renderPosts = (container, posts, readPosts) => {
   const postsContainer = container.querySelector('.posts .list-group')
 
   if (posts.length === 0) {
@@ -79,14 +81,14 @@ export const renderPosts = (container, posts, readPosts) => {
 
   sortedPosts.forEach((post) => {
     const isRead = readPosts.includes(post.id)
-    const fontWeightClass = isRead ? '' : 'fw-bold'
+    const linkClass = isRead ? 'link-secondary' : 'fw-bold'
 
     const postItem = document.createElement('li')
     postItem.className = 'list-group-item d-flex justify-content-between align-items-start border-0 border-end-0'
 
     const postLink = document.createElement('a')
     postLink.href = post.link
-    postLink.className = fontWeightClass
+    postLink.className = linkClass
     postLink.dataset.id = post.id
     postLink.target = '_blank'
     postLink.rel = 'noopener noreferrer'
@@ -112,7 +114,7 @@ export const renderPosts = (container, posts, readPosts) => {
   postsContainer.appendChild(postsList)
 }
 
-export const renderStaticTexts = (elements, i18nInstance) => {
+const renderStaticTexts = (elements, i18nInstance) => {
   document.querySelector('h1.display-3').textContent = i18nInstance.t('app.title')
   document.querySelector('p.lead').textContent = i18nInstance.t('app.description')
   document.querySelector('label[for="url-input"]').textContent = i18nInstance.t('form.label')
@@ -121,7 +123,7 @@ export const renderStaticTexts = (elements, i18nInstance) => {
   document.querySelector('p.text-secondary').textContent = i18nInstance.t('app.example')
 }
 
-export const renderModal = (postTitle, postDescription, postLink) => {
+const renderModal = (postTitle, postDescription, postLink) => {
   const modalTitle = document.querySelector('.modal-title')
   const modalBody = document.querySelector('.modal-body')
   const modalLink = document.querySelector('.full-article')
@@ -137,4 +139,42 @@ export const renderModal = (postTitle, postDescription, postLink) => {
   if (modalLink) {
     modalLink.href = postLink || '#'
   }
+}
+
+export const initView = (container, elements, state, i18nInstance) => {
+  renderStaticTexts(elements, i18nInstance)
+  renderFeeds(container, state.data.feeds)
+  renderPosts(container, state.data.posts, state.ui.readPosts)
+
+  onChange(state, (path) => {
+    if (path === 'process.state') {
+      handleFormState(elements, state.process.state)
+    }
+
+    if (path === 'process.error' || path === 'form.success') {
+      renderFeedback(elements, state.process.error, state.form.success, i18nInstance)
+    }
+
+    if (path === 'form.url') {
+      elements.input.value = state.form.url
+    }
+
+    if (path === 'data.feeds') {
+      renderFeeds(container, state.data.feeds)
+    }
+
+    if (path === 'data.posts' || path === 'ui.readPosts') {
+      renderPosts(container, state.data.posts, state.ui.readPosts)
+    }
+
+    if (path === 'ui.lng') {
+      i18nInstance.changeLanguage(state.ui.lng)
+        .then(() => {
+          renderStaticTexts(elements, i18nInstance)
+          if (state.process.error || state.form.success) {
+            renderFeedback(elements, state.process.error, state.form.success, i18nInstance)
+          }
+        })
+    }
+  })
 }
