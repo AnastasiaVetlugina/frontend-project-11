@@ -24,7 +24,7 @@ const updatePosts = (state, container) => {
 
           const existingLinks = state.data.posts.map(post => post.link)
           const uniqueNewPosts = newPosts.filter(post =>
-            post.link && !existingLinks.includes(post.link)
+            post.link && !existingLinks.includes(post.link),
           )
 
           if (uniqueNewPosts.length > 0) {
