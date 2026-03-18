@@ -123,7 +123,7 @@ const renderStaticTexts = (elements, i18nInstance) => {
   document.querySelector('p.text-secondary').textContent = i18nInstance.t('app.example')
 }
 
-const renderModal = (postTitle, postDescription, postLink) => {
+export const renderModal = (postTitle, postDescription, postLink) => {
   const modalTitle = document.querySelector('.modal-title')
   const modalBody = document.querySelector('.modal-body')
   const modalLink = document.querySelector('.full-article')
@@ -141,38 +141,34 @@ const renderModal = (postTitle, postDescription, postLink) => {
   }
 }
 
-export const initView = (container, elements, state, i18nInstance) => {
-  renderStaticTexts(elements, i18nInstance)
-  renderFeeds(container, state.data.feeds)
-  renderPosts(container, state.data.posts, state.ui.readPosts)
-
-  onChange(state, (path) => {
+export const createWatchedState = (initialState, container, elements, i18nInstance) => {
+  return onChange(initialState, (path) => {
     if (path === 'process.state') {
-      handleFormState(elements, state.process.state)
+      handleFormState(elements, initialState.process.state)
     }
 
     if (path === 'process.error' || path === 'form.success') {
-      renderFeedback(elements, state.process.error, state.form.success, i18nInstance)
+      renderFeedback(elements, initialState.process.error, initialState.form.success, i18nInstance)
     }
 
     if (path === 'form.url') {
-      elements.input.value = state.form.url
+      elements.input.value = initialState.form.url
     }
 
     if (path === 'data.feeds') {
-      renderFeeds(container, state.data.feeds)
+      renderFeeds(container, initialState.data.feeds)
     }
 
     if (path === 'data.posts' || path === 'ui.readPosts') {
-      renderPosts(container, state.data.posts, state.ui.readPosts)
+      renderPosts(container, initialState.data.posts, initialState.ui.readPosts)
     }
 
     if (path === 'ui.lng') {
-      i18nInstance.changeLanguage(state.ui.lng)
+      i18nInstance.changeLanguage(initialState.ui.lng)
         .then(() => {
           renderStaticTexts(elements, i18nInstance)
-          if (state.process.error || state.form.success) {
-            renderFeedback(elements, state.process.error, state.form.success, i18nInstance)
+          if (initialState.process.error || initialState.form.success) {
+            renderFeedback(elements, initialState.process.error, initialState.form.success, i18nInstance)
           }
         })
     }

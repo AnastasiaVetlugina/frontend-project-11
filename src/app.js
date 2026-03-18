@@ -1,10 +1,9 @@
-import onChange from 'on-change'
 import { validateUrl } from './validation.js'
 import { loadAndParseFeed } from './utils.js'
 import updatePosts from './updatePosts.js'
 import i18n from 'i18next'
 import resources from './locales/index.js'
-import { initView } from './view.js'
+import { createWatchedState, renderModal } from './view.js'
 
 const initApp = (container) => {
   const i18nInstance = i18n.createInstance()
@@ -41,9 +40,7 @@ const initApp = (container) => {
       },
     }
 
-    const state = onChange(initialState, () => {})
-
-    initView(container, elements, state, i18nInstance)
+    const state = createWatchedState(initialState, container, elements, i18nInstance)
 
     const handleSubmit = (e) => {
       e.preventDefault()
@@ -70,8 +67,6 @@ const initApp = (container) => {
             feedId: feed.id,
           }))
           state.data.posts.unshift(...postsWithFeedId)
-
-          updatePosts(state)
 
           state.process.state = 'filling'
           e.target.reset()
@@ -102,6 +97,11 @@ const initApp = (container) => {
       if (!viewButton) return
 
       const postId = viewButton.dataset.id
+      const postTitle = viewButton.dataset.title
+      const postDescription = viewButton.dataset.description
+      const postLink = viewButton.dataset.link
+
+      renderModal(postTitle, postDescription, postLink)
 
       if (postId && !state.ui.readPosts.includes(postId)) {
         state.ui.readPosts.push(postId)
@@ -111,7 +111,7 @@ const initApp = (container) => {
     elements.form.addEventListener('submit', handleSubmit)
     document.addEventListener('click', handleModalOpen)
 
-    updatePosts(state)
+    updatePosts(state, container)
 
     return { state, i18nInstance, elements }
   })

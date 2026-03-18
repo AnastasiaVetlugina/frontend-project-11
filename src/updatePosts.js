@@ -6,9 +6,9 @@ const getProxiedUrl = (url) => {
   return `${proxy}?disableCache=true&url=${encodeURIComponent(url)}`
 }
 
-const updatePosts = (state) => {
-  if (!state.data.feeds || state.data.feeds.length === 0) {
-    setTimeout(() => updatePosts(state), 5000)
+const updatePosts = (state, container) => {
+  if (!state.data.feeds?.length) {
+    setTimeout(() => updatePosts(state, container), 5000)
     return
   }
 
@@ -23,9 +23,8 @@ const updatePosts = (state) => {
           const { posts: newPosts } = parseRssFeed(response.data.contents)
 
           const existingLinks = state.data.posts.map(post => post.link)
-
           const uniqueNewPosts = newPosts.filter(post =>
-            post.link && !existingLinks.includes(post.link),
+            post.link && !existingLinks.includes(post.link)
           )
 
           if (uniqueNewPosts.length > 0) {
@@ -36,17 +35,17 @@ const updatePosts = (state) => {
           }
         }
         catch {
-          // Игнорируем ошибки при обновлении
+          // Игнорируем ошибки парсинга
         }
       })
       .catch(() => {
-        // Игнорируем ошибки сети
+        // Игнорируем сетевые ошибки
       })
   })
 
   Promise.allSettled(feedPromises)
     .finally(() => {
-      setTimeout(() => updatePosts(state), 5000)
+      setTimeout(() => updatePosts(state, container), 5000)
     })
 }
 
