@@ -1,9 +1,58 @@
+import axios from 'axios'
+import { parseRssFeed } from './parser.js'
+import { fetchRssFeed } from './utils.js'
 import { validateUrl } from './validation.js'
-import { loadAndParseFeed } from './utils.js'
-import updatePosts from './updatePosts.js'
 import i18n from 'i18next'
 import resources from './locales/index.js'
 import { createWatchedState, renderModal } from './view.js'
+
+const loadAndParseFeed = (url) => {
+  return fetchRssFeed(url)
+    .then(xmlString => parseRssFeed(xmlString))
+}
+
+const getProxiedUrl = (url) => {
+  const proxy = 'https://allorigins.hexlet.app/get'
+  return `${proxy}?disableCache=true&url=${encodeURIComponent(url)}`
+}
+
+const updatePosts = (state, container) => {
+  if (!state.data.feeds?.length) {
+    setTimeout(() => updatePosts(state, container), 5000)
+    return
+  }
+
+  const feedPromises = state.data.feeds.map((feed) => {
+    const url = getProxiedUrl(feed.url)
+
+    return axios.get(url, { timeout: 5000 })
+      .then((response) => {
+        if (!response.data.contents) return
+
+        const { posts: newPosts } = parseRssFeed(response.data.contents)
+
+        const existingLinks = state.data.posts.map(post => post.link)
+        const uniqueNewPosts = newPosts.filter(post =>
+          post.link && !existingLinks.includes(post.link),
+        )
+
+        if (uniqueNewPosts.length > 0) {
+          state.data.posts.unshift(...uniqueNewPosts.map(post => ({
+            ...post,
+            feedId: feed.id,
+          })))
+        }
+      })
+      .catch(() => {
+        // Игнорируем ошибки
+      })
+  })
+
+  Promise.allSettled(feedPromises)
+    .finally(() => {
+      setTimeout(() => updatePosts(state, container), 5000)
+    })
+}
 
 const initApp = (container) => {
   const i18nInstance = i18n.createInstance()
@@ -81,13 +130,13 @@ const initApp = (container) => {
             state.process.error = error.errors[0]
           }
           else if (error.message.includes('invalidRss')) {
-            state.process.error = i18nInstance.t('errors.notRss')
+            state.process.error = 'notRss'
           }
           else if (error.message.includes('timeout') || error.message.includes('Network')) {
-            state.process.error = i18nInstance.t('errors.network')
+            state.process.error = 'network'
           }
           else {
-            state.process.error = `Ошибка: ${error.message}`
+            state.process.error = 'unknown'
           }
         })
     }

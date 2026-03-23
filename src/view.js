@@ -22,7 +22,7 @@ const handleFormState = (elements, formState) => {
 const renderFeedback = (elements, error, success, i18nInstance) => {
   let message = ''
   if (error) {
-    message = error
+    message = i18nInstance.t(`${error}`)
   }
   else if (success) {
     message = i18nInstance.t('app.success')
@@ -43,10 +43,18 @@ const renderFeedback = (elements, error, success, i18nInstance) => {
 
 const renderFeeds = (container, feeds) => {
   const feedsContainer = container.querySelector('.feeds .list-group')
+  const feedsCard = container.querySelector('.feeds .card')
 
   if (feeds.length === 0) {
     feedsContainer.innerHTML = ''
+    if (feedsCard) {
+      feedsCard.classList.add('d-none')
+    }
     return
+  }
+
+  if (feedsCard) {
+    feedsCard.classList.remove('d-none')
   }
 
   const feedsList = document.createElement('ul')
@@ -68,10 +76,18 @@ const renderFeeds = (container, feeds) => {
 
 const renderPosts = (container, posts, readPosts) => {
   const postsContainer = container.querySelector('.posts .list-group')
+  const postsCard = container.querySelector('.posts .card')
 
   if (posts.length === 0) {
     postsContainer.innerHTML = ''
+    if (postsCard) {
+      postsCard.classList.add('d-none')
+    }
     return
+  }
+
+  if (postsCard) {
+    postsCard.classList.remove('d-none')
   }
 
   const postsList = document.createElement('ul')
