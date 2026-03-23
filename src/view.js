@@ -22,7 +22,7 @@ const handleFormState = (elements, formState) => {
 const renderFeedback = (elements, error, success, i18nInstance) => {
   let message = ''
   if (error) {
-    message = i18nInstance.t(`${error}`)
+    message = error
   }
   else if (success) {
     message = i18nInstance.t('app.success')

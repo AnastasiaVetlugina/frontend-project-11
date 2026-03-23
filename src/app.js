@@ -130,13 +130,13 @@ const initApp = (container) => {
             state.process.error = error.errors[0]
           }
           else if (error.message.includes('invalidRss')) {
-            state.process.error = 'notRss'
+            state.process.error = i18nInstance.t('errors.notRss')
           }
           else if (error.message.includes('timeout') || error.message.includes('Network')) {
-            state.process.error = 'network'
+            state.process.error = i18nInstance.t('errors.network')
           }
           else {
-            state.process.error = 'unknown'
+            state.process.error = i18nInstance.t('errors.unknown')
           }
         })
     }
