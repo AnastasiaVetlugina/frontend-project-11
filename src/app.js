@@ -1,14 +1,15 @@
 import axios from 'axios'
 import { parseRssFeed } from './parser.js'
-import { fetchRssFeed } from './utils.js'
 import { validateUrl } from './validation.js'
 import i18n from 'i18next'
 import resources from './locales/index.js'
 import { createWatchedState, renderModal } from './view.js'
 
 const loadAndParseFeed = (url) => {
-  return fetchRssFeed(url)
-    .then(xmlString => parseRssFeed(xmlString))
+  const proxyUrl = `https://allorigins.hexlet.app/get?url=${encodeURIComponent(url)}&disableCache=true`
+
+  return axios.get(proxyUrl, { timeout: 10000 })
+    .then(({ data }) => parseRssFeed(data.contents))
 }
 
 const getProxiedUrl = (url) => {
@@ -27,8 +28,6 @@ const updatePosts = (state, container) => {
 
     return axios.get(url, { timeout: 5000 })
       .then((response) => {
-        if (!response.data.contents) return
-
         const { posts: newPosts } = parseRssFeed(response.data.contents)
 
         const existingLinks = state.data.posts.map(post => post.link)
@@ -100,7 +99,7 @@ const initApp = (container) => {
       state.form.success = false
       state.process.state = 'validating'
 
-      validateUrl(url, state.data.feedUrls, i18nInstance)
+      validateUrl(url, state.data.feedUrls)
         .then(() => {
           state.process.state = 'submitting'
           return loadAndParseFeed(url)
@@ -125,19 +124,7 @@ const initApp = (container) => {
         .catch((error) => {
           state.process.state = 'invalid'
           state.form.success = false
-
-          if (error.name === 'ValidationError') {
-            state.process.error = error.errors[0]
-          }
-          else if (error.message.includes('invalidRss')) {
-            state.process.error = i18nInstance.t('errors.notRss')
-          }
-          else if (error.message.includes('timeout') || error.message.includes('Network')) {
-            state.process.error = i18nInstance.t('errors.network')
-          }
-          else {
-            state.process.error = i18nInstance.t('errors.unknown')
-          }
+          state.process.error = error
         })
     }
 
