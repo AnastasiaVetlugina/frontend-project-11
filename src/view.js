@@ -25,14 +25,18 @@ const renderFeedback = (elements, error, success, i18nInstance) => {
   if (error) {
     if (error.name === 'ValidationError') {
       message = i18nInstance.t(error.errors[0])
-    } else if (error.message.includes('invalidRss')) {
+    }
+    else if (error.message.includes('invalidRss')) {
       message = i18nInstance.t('errors.notRss')
-    } else if (error.message.includes('timeout') || error.message.includes('Network')) {
+    }
+    else if (error.message.includes('timeout') || error.message.includes('Network')) {
       message = i18nInstance.t('errors.network')
-    } else {
+    }
+    else {
       message = i18nInstance.t('errors.unknown')
     }
-  } else if (success) {
+  }
+  else if (success) {
     message = i18nInstance.t('app.success')
   }
 
@@ -43,7 +47,8 @@ const renderFeedback = (elements, error, success, i18nInstance) => {
   if (error) {
     elements.feedback.classList.add('text-danger')
     elements.input.classList.add('is-invalid')
-  } else if (success) {
+  }
+  else if (success) {
     elements.feedback.classList.add('text-success')
   }
 }
