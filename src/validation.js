@@ -1,21 +1,12 @@
 import * as yup from 'yup'
 
-yup.setLocale({
-  mixed: {
-    required: 'errors.required',
-  },
-  string: {
-    url: 'errors.url',
-  },
-})
-
 const createSchema = (existingFeedUrls = []) => {
   return yup.object({
     url: yup
       .string()
       .required()
       .url()
-      .notOneOf(existingFeedUrls, 'errors.duplicate'),
+      .notOneOf(existingFeedUrls, 'duplicate'),
   })
 }
 

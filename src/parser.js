@@ -2,7 +2,7 @@ import { nanoid } from 'nanoid'
 
 export const parseRssFeed = (xmlString) => {
   if (typeof DOMParser === 'undefined') {
-    throw new Error('DOMParser not available')
+    throw new Error('notRss')
   }
 
   const parser = new DOMParser()
@@ -10,12 +10,12 @@ export const parseRssFeed = (xmlString) => {
 
   const parserError = xmlDoc.querySelector('parsererror')
   if (parserError) {
-    throw new Error('invalidRss')
+    throw new Error('notRss')
   }
 
   const channel = xmlDoc.querySelector('channel')
   if (!channel) {
-    throw new Error('invalidRss')
+    throw new Error('notRss')
   }
 
   const feed = {
@@ -33,7 +33,7 @@ export const parseRssFeed = (xmlString) => {
   }))
 
   if (posts.length === 0) {
-    throw new Error('invalidRss')
+    throw new Error('notRss')
   }
 
   return { feed, posts }
