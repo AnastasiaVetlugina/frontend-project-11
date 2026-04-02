@@ -54,12 +54,12 @@ const updatePosts = (state) => {
 
     return axios
       .get(url, { timeout: 5000 })
-      .then(response => {
+      .then((response) => {
         const { posts: newPosts } = parseRssFeed(response.data.contents)
 
         const existingLinks = state.data.posts.map(post => post.link)
-        const uniqueNewPosts = newPosts.filter(
-          (post) => post.link && !existingLinks.includes(post.link),
+        const uniqueNewPosts = newPosts.filter(post =>
+          post.link && !existingLinks.includes(post.link),
         )
 
         if (uniqueNewPosts.length > 0) {
