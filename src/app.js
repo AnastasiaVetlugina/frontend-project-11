@@ -27,6 +27,9 @@ const loadAndParseFeed = (url, state) => {
       return { feed, posts }
     })
     .catch((error) => {
+      if (error.message === 'notRss') {
+        throw new Error('notRss')
+      }
       if (error.message.includes('timeout') || error.message.includes('Network')) {
         throw new Error('network')
       }
