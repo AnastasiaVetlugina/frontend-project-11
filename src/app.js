@@ -103,7 +103,7 @@ const initApp = (container) => {
       form: container.querySelector('.rss-form'),
       input: document.querySelector('#url-input'),
       feedback: document.querySelector('.feedback'),
-      submitBtn: document.querySelector('button[type='submit']'),
+      submitBtn: document.querySelector('button[type="submit"]'),
     }
 
     const initialState = {
