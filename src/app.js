@@ -15,7 +15,7 @@ const loadAndParseFeed = (url, state) => {
       state.data.feedUrls.push(url)
       const feedWithUrl = { ...feed, url }
       state.data.feeds.unshift(feedWithUrl)
-      const postsWithFeedId = posts.map((post) => ({
+      const postsWithFeedId = posts.map(post => ({
         ...post,
         feedId: feed.id,
       }))
@@ -27,8 +27,8 @@ const loadAndParseFeed = (url, state) => {
         throw new Error('notRss')
       }
       if (
-        error.message.includes('timeout') ||
-        error.message.includes('Network')
+        error.message.includes('timeout')
+        || error.message.includes('Network')
       ) {
         throw new Error('network')
       }
@@ -54,17 +54,17 @@ const updatePosts = (state) => {
 
     return axios
       .get(url, { timeout: 5000 })
-      .then((response) => {
+      .then(response => {
         const { posts: newPosts } = parseRssFeed(response.data.contents)
 
-        const existingLinks = state.data.posts.map((post) => post.link)
+        const existingLinks = state.data.posts.map(post => post.link)
         const uniqueNewPosts = newPosts.filter(
           (post) => post.link && !existingLinks.includes(post.link),
         )
 
         if (uniqueNewPosts.length > 0) {
           state.data.posts.unshift(
-            ...uniqueNewPosts.map((post) => ({
+            ...uniqueNewPosts.map(post => ({
               ...post,
               feedId: feed.id,
             })),
@@ -146,7 +146,7 @@ const initApp = (container) => {
           state.process.state = 'filling'
           e.target.reset()
           state.process.error = null
-           state.form.success = true
+          state.form.success = true
         })
         .catch((error) => {
           state.process.state = 'invalid'
